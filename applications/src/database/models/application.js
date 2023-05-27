@@ -22,6 +22,25 @@ const applicationSchema = new mongoose.Schema({
      },
      cvUrl:String,
 })
+
+const interviewSchema=new mongoose.Schema({
+    candidateId:String,
+    candidateName:String,
+    applicationId:String,
+    employerID:String,
+    date:String,
+    startTime:String,
+    endTime:String,
+    location:String,
+    jobTitle:String,
+    interviewMode:String,
+    status:{
+    type:String,
+    default:'Pending'
+    }
+})
+
 module.exports={
-applications:db.model('applications',applicationSchema)
+applications:db.model('applications',applicationSchema),
+interviews:db.model('interviews',interviewSchema)
 }
