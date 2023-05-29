@@ -10,6 +10,7 @@ const {
   getJobsByEmployer,
   deletePost,
   updatePost,
+  getLocations,
 } = require("../services/postServices");
  
 router.post("/postjob",verify,postJob);
@@ -20,5 +21,7 @@ router.post("/searchJob",searchJobs);
 router.get("/employerJobs",verify,getJobsByEmployer);
 router.delete("/deletePost/:id",verify,deletePost);
 router.put('/updatePost/:id',verify,updatePost)
+router.get('/locations',getLocations)
+
 
 module.exports = router;

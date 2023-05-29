@@ -14,7 +14,9 @@ app.use(cors({
 }))
 app.use(cookieParser())
 app.use(express.json())
-app.use('/',posts)    
+
+app.use('/',posts)
+ 
 
 app.listen(PORT,(res)=>{
 console.log(`Job Post server running in the port ${PORT}`)

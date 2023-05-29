@@ -1,4 +1,5 @@
-const { jobPosts } = require("../database/models/posts");
+ const { jobPosts } = require("../database/models/posts");
+ const {locations}=require("../database/models/locations")
 const {
   getEmployerJobs,
   deletePostById,
@@ -133,4 +134,17 @@ module.exports = {
       res.status(500).send("Internal server Error");
     }
   },
+
+
+  getLocations:async(req,res)=>{
+    console.log('calling????');
+    const {input}=req.query
+    try {
+   const cities=await locations.find({city:{$regex:new RegExp(`^${input}`),$options:'i'}}).limit(10)
+    res.json(cities)
+   }catch (error){
+   console.error(error)
+   res.status(500).json({message:'Internal server error'})
+   }
+  }
 };

@@ -4,7 +4,7 @@ const express=require('express')
 const app=express()
 const cors=require('cors')
 const cookieParser=require('cookie-parser')
-const locations=require('./services/location')
+const admin=require('./services/admin')
 const PORT=process.env.PORT
 app.use(cors({
     origin:true,
@@ -12,11 +12,11 @@ app.use(cors({
 }))
 app.use(cookieParser())
 app.use(express.json())
-app.use('/',locations)
+app.use('/',admin)
 
 
    
 
 app.listen(PORT,(res)=>{
-console.log(`Location Database   server  running in the port ${PORT}`)
+console.log(`Admin Database   server  running in the port ${PORT}`)
 })

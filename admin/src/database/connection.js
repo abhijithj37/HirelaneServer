@@ -5,7 +5,7 @@ db.on('error',(err)=>{
     console.error();
 })
 db.once('open',()=>{
-    console.log('Location Database Connection successfull');
+    console.log('Admin Database Connection successfull');
 })
 
 module.exports=db
