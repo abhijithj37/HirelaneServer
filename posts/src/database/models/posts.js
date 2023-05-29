@@ -19,7 +19,10 @@ const jobPostSchema = new mongoose.Schema({
       }
       ],
       createdAt:String,
-      status:String,
+      verified:{
+            type:Boolean,
+            default:false
+      }
       
       
 })

@@ -111,7 +111,6 @@ module.exports = {
     try {
       const jobId = req.params.id;
       const empId = req.employerId;
-      console.log("her is the id ", jobId);
       const updatedJobs = await deletePostById(jobId, empId);
 
       res.status(200).json({ jobs: updatedJobs });

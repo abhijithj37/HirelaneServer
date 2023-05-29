@@ -9,11 +9,22 @@ const {
   createNewInterView,
   findEmpInterviews,
   findEmpInterviewDetails,
+  findCandidateInterviews,
+  updateInterviewData,
   
 } = require("../database/repository/application-repository");
+const {applications}=require('../database/models/application')
 
 module.exports = {
-  applyJob: (req, res) => {
+  applyJob:async (req, res) => {
+    const {candidateId,jobId}=req.body
+    const userApplication=await applications.findOne({candidateId,jobId})
+    if(userApplication){
+   return res.status(400).send("Already applied for this job")
+    }
+    
+
+
     const date = new Date();
     const formattedDate = date.toLocaleString("en-US", {
       day: "numeric",
@@ -21,6 +32,7 @@ module.exports = {
       year: "numeric",
     });
     req.body.createdAt = formattedDate;
+
     createApplication(req.body)
       .then((data) => {
         res.status(200).send("Application submitted successfully");
@@ -140,6 +152,24 @@ module.exports = {
     }).catch((er)=>{
       res.status(500).send('Internal server error')
     })
+  },
+  getCandidateInterviews:(req,res)=>{
+    findCandidateInterviews(req.seekerId).then((data)=>{
+    return  res.status(200).json(data)
+    }).catch((err)=>{
+      console.log(err);
+    })
+  },
+  updateInterviewDetails:(req,res)=>{
+  const id=req.params.id
+  const {status}=req.body
+  updateInterviewData(id,status).then((data)=>{
+    res.status(200).json(data)
+  }).catch((err)=>{
+    console.log(err)
+  })
   }
+    
+  
   
 };

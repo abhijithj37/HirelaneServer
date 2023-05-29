@@ -12,13 +12,13 @@ const {
   updatePost,
 } = require("../services/postServices");
  
-router.post("/postjob", verify, postJob);
-router.get("/getJobs", getAllJobs);
-router.get("/getJob/:id", getJobById);
-router.get("/jobSuggessions", getJobSuggessions);
-router.post("/searchJob", searchJobs);
-router.get("/employerJobs", verify, getJobsByEmployer);
-router.delete("/deletePost/:id", verify, deletePost);
+router.post("/postjob",verify,postJob);
+router.get("/getJobs",getAllJobs);
+router.get("/getJob/:id",getJobById);
+router.get("/jobSuggessions",getJobSuggessions);
+router.post("/searchJob",searchJobs);
+router.get("/employerJobs",verify,getJobsByEmployer);
+router.delete("/deletePost/:id",verify,deletePost);
 router.put('/updatePost/:id',verify,updatePost)
 
 module.exports = router;

@@ -1,5 +1,5 @@
 const express=require('express')
-const { signUp, login, googleSignIn, logout,  getEmployer, getDetails } = require('../services/employerService')
+const { signUp, login, googleSignIn, logout,  getEmployer, getDetails, sendVerificationEmail } = require('../services/employerService')
 const { validateSignup, validateLogin } = require('../utils/validations/validateCredentials')
 const { validate } = require('../utils/validations/validation')
 const { vefifyEmployer, verifySeeker } = require('../utils/auth')
@@ -12,6 +12,9 @@ router.post('/signup', validateSignup,validate,signUp)
 router.post('/login',validateLogin,validate,login)
 
 router.post('/googleSignIn',googleSignIn)
+
+router.post('/verify-email',sendVerificationEmail)
+
 
 router.get('/verifyEmployer',vefifyEmployer,getEmployer)
 

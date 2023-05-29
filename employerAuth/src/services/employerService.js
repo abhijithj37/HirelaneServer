@@ -7,15 +7,20 @@ const {
 const { generateToken } = require("../utils/auth");
 const bcrypt = require("bcrypt");
 const jwt_decode = require("jwt-decode");
+const sendVerificationCode = require("../utils/sendEmail");
+const { EmailVerificationTokens } = require("../database/models/emailVerificationToken");
+const { employers } = require("../database/models/employer");
+const crypto=require('crypto')
 
 module.exports = {
 
 
   signUp: async (req, res) => {
     try {
-      const employer = await getEmployerByEmail(req.body.email);
-      if (employer) {
-        return res.status(400).send("Email already exists");
+      const {email,verificationCode}=req.body
+      const verificationToken = await EmailVerificationTokens.findOne({email,verificationToken:verificationCode})
+      if (!verificationToken) {
+        return res.status(400).send("Invalid verification code");
       }
       const newEmployer = await createNewEmployer(req.body);
       const token = generateToken(newEmployer._id);
@@ -104,7 +109,25 @@ module.exports = {
       res.status(500).send('Internal Server Error')
     })
 
-  }
+  },
+  sendVerificationEmail:async(req,res)=>{
+    console.log('calling the verification');
+    try{
+    const {email}=req.body
+    const user=await employers.findOne({email})
+    if(user){
+     return res.status(400).send('Email already in use')
+    }
+    
+    const verificationToken=crypto.randomInt(100000,999999).toString()
+     await sendVerificationCode(email,verificationToken)
+     await EmailVerificationTokens.deleteOne({email})
+     await EmailVerificationTokens({email,verificationToken}).save()
+    res.status(200).send('Verification code send to email')
+    }catch(error){
+     res.status(400).send('Internal server Error')
+    }
+    }
 
 
 };

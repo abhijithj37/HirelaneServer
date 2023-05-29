@@ -21,11 +21,18 @@ const applicationSchema = new mongoose.Schema({
         default:'Applied'
      },
      cvUrl:String,
+     verified:{
+        type:Boolean,
+        default:false
+    }
 })
+
+
 
 const interviewSchema=new mongoose.Schema({
     candidateId:String,
     candidateName:String,
+    companyName:String,
     applicationId:String,
     employerID:String,
     date:String,
@@ -38,9 +45,10 @@ const interviewSchema=new mongoose.Schema({
     type:String,
     default:'Pending'
     }
+     
 })
 
 module.exports={
-applications:db.model('applications',applicationSchema),
-interviews:db.model('interviews',interviewSchema)
+   applications:db.model('applications',applicationSchema),
+   interviews:db.model('interviews',interviewSchema)
 }

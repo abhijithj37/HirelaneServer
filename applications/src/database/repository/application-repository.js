@@ -63,12 +63,22 @@ module.exports = {
     return data
   },
   findEmpInterviews:async(id)=>{
-    const data=await interviews.find({employerID:id})
-    return data
+  const  data=await interviews.find({employerID:id})
+  return data
+  
   },
   findEmpInterviewDetails:async(id)=>{
     const data=await interviews.findOne({applicationId:id})
     console.log(data,'emp interview details');
     return data
+  },
+  findCandidateInterviews:async(id)=>{
+    const data=await interviews.find({candidateId:id})
+    return data
+  },
+  updateInterviewData:async(id,status)=>{
+  const newData=await interviews.findOneAndUpdate({_id:id},{$set:{status:status}},{new:true})
+  return newData
   }
+
 };

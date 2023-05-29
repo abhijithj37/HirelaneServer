@@ -1,6 +1,6 @@
 const express=require('express')
 const { verifySeeker, verifyEmployer } = require('../utils/auth')
-const { applyJob, getUserApplication, getJobApplications, updateApplication, getEmpAppDetails, getEmpApplications, getApplication, postInterView, getEmpInterviews, getEmpInterviewDetails } = require('../services/applicationService')
+const { applyJob, getUserApplication, getJobApplications, updateApplication, getEmpAppDetails, getEmpApplications, getApplication, postInterView, getEmpInterviews, getEmpInterviewDetails, getCandidateInterviews, updateInterviewDetails } = require('../services/applicationService')
  
 const   router=express.Router()
 
@@ -15,6 +15,9 @@ router.get('/emp-getApplication/:id',verifyEmployer,getApplication)
 router.post('/interview',verifyEmployer,postInterView)
 router.get('/emp-interviews/:id',verifyEmployer,getEmpInterviews)
 router.get('/emp-interviewDetails/:id',verifyEmployer,getEmpInterviewDetails)
+router.get('/interviews',verifySeeker,getCandidateInterviews)
+router.put('/interview/:id',verifyEmployer,updateInterviewDetails)
+
 
 
 module.exports=router 

@@ -7,7 +7,7 @@ const validateSignup = [
   body("name")
     .notEmpty()
     .withMessage("Name is required")
-    .isAlpha()
+    .matches(/^[a-zA-Z\s]+$/)
     .withMessage("Name should only contain alphabets"),
   body("companyName")
     .notEmpty()

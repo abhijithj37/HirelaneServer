@@ -6,8 +6,11 @@ const { body, validationResult } = require("express-validator");
 const { validateLogin } = require("../../../employerAuth/src/utils/validations/validateCredentials");
 const { updateSeekerProfile, getUserDetails } = require("../database/repository/seeker-repository");
 const path=require('path');
+const crypto=require('crypto')
 const { log } = require("console");
- module.exports = {
+const sendVerificationCode = require("../utils/sendEmail");
+const { EmailVerificationTokens } = require("../database/modal/emailVerificationToken");
+  module.exports = {
 signUp: async (req, res) => {
     try {
     await body("fName")
@@ -44,11 +47,11 @@ signUp: async (req, res) => {
         return res.status(422).json({ errors: errorObject });
       }
 
-      const { email } = req.body;
-      const seeker = await seekers.findOne({ email });
-
-      if (seeker) {
-      return res.status(400).send("Email already exists");
+      const { email ,verificationCode} = req.body;
+      // const seeker = await seekers.findOne({ email });
+      const verificationToken=await EmailVerificationTokens.findOne({email,verificationToken:verificationCode})
+       if (!verificationToken) {
+      return res.status(400).send("Invalid verification code");
       }
       
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -168,12 +171,12 @@ signUp: async (req, res) => {
       return res.status(200).json({seeker});
     }
     if(email_verified) {
-      users(googleUser)
+      seekers(googleUser)
         .save()
         .then((result) => {
           const auth_token = generateToken(result._id);
           res.cookie("seeker_auth_token", auth_token, { httpOnly: true });
-          res.status(200).json({ user: result });
+          res.status(200).json({ seeker: result });
         });
     } else {
       res.status(400).send("email not verified");
@@ -185,7 +188,6 @@ signUp: async (req, res) => {
 
 
 updateProfile:async(req,res)=>{ 
-
 const data=JSON.parse(req.body.data)
 req.body.skills=data.skills
 req.body.education=data.education
@@ -195,10 +197,12 @@ let image=req.body.image
 if(req.file){
   image=req.file.filename
 }
+
+
  req.body.image=image  
  const updated=await updateSeekerProfile(req.body,seekerId)
  res.status(200).json({seeker:updated})
-         
+      
  },
 
   
@@ -208,6 +212,8 @@ if(req.file){
       res.sendFile(imagePath)
   },
   
+
+
   getDetails:(req,res)=>{
     ('hello')
   getUserDetails(req.params.id).then((data)=>{
@@ -216,6 +222,26 @@ if(req.file){
   }).catch((err)=>{
   res.status(500).send('Internal Server Error')
   })
-  }
+  },
+
+
+
+sendVerificationEmail:async(req,res)=>{
+try{
+const {email}=req.body
+const user=await seekers.findOne({email})
+if(user){
+ return res.status(400).send('Email already in use')
+}
+
+const verificationToken=crypto.randomInt(100000,999999).toString()
+ await sendVerificationCode(email,verificationToken)
+ await EmailVerificationTokens.deleteOne({email})
+ await EmailVerificationTokens({email,verificationToken}).save()
+res.status(200).send('Verification code send to email')
+}catch(error){
+ res.status(400).send(error)
+}
+}
 
 };
