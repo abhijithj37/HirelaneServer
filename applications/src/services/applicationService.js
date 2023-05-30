@@ -160,6 +160,7 @@ module.exports = {
       console.log(err);
     })
   },
+  
   updateInterviewDetails:(req,res)=>{
   const id=req.params.id
   const {status}=req.body
@@ -168,7 +169,9 @@ module.exports = {
   }).catch((err)=>{
     console.log(err)
   })
-  }
+  },
+  
+   
     
   
   

@@ -4,8 +4,9 @@ const express=require('express')
 const app=express()
 const cors=require('cors')
 const cookieParser=require('cookie-parser')
-const admin=require('./services/admin')
+const admin=require('./api/admin')
 const PORT=process.env.PORT
+
 app.use(cors({
     origin:true,
     credentials:true    

@@ -6,7 +6,7 @@ const cors=require('cors')
 const proxy=require('express-http-proxy')
 const cookieParser=require('cookie-parser')
 const PORT=process.env.PORT
- 
+
 app.use(cors({
 origin:true,
 credentials:true
