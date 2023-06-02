@@ -13,7 +13,7 @@ module.exports = {
   
   findEmpAppDetails:async(id)=>{
     const data = await applications.aggregate([
-      {$match:{employerId:id+"",status:{$eq:"Applied"}}},
+      {$match:{employerId:id+"",status:{$eq:"Applied"},verificationStatus:'Approved'}},
       { 
         $group: {
           _id:"$jobId",
@@ -51,7 +51,7 @@ module.exports = {
 
    
   findAllempApplications:async(id)=>{
-    const data=await applications.find({employerId:id})
+    const data=await applications.find({employerId:id,verificationStatus:'Approved'})
     return data
   },
   findApplication:async(id)=>{
@@ -69,7 +69,7 @@ module.exports = {
   },
   findEmpInterviewDetails:async(id)=>{
     const data=await interviews.findOne({applicationId:id})
-    console.log(data,'emp interview details');
+    
     return data
   },
   findCandidateInterviews:async(id)=>{
@@ -79,6 +79,34 @@ module.exports = {
   updateInterviewData:async(id,status)=>{
   const newData=await interviews.findOneAndUpdate({_id:id},{$set:{status:status}},{new:true})
   return newData
+  },
+  findAllApplications:async()=>{
+    const data=await applications.find()
+    return data
+  },
+  updateVerificationStatus:async(id,status)=>{
+  const updated=await  applications.findOneAndUpdate({_id:id},{$set:{verificationStatus:status}},{new:true})
+  return updated
+  },
+
+  findApplicationsByMonth:async()=>{
+  const appData =await applications.aggregate([
+    {$group:{
+    _id:{$month:'$createdAt'},
+    count:{$sum:1}
+    
+  }},
+{
+  $sort:{
+    _id:1
+  }
+}])
+const data=appData.map((d)=>({
+ month:new Date(0,d._id-1).toLocaleString('en',{month:'short'}),
+ applications:d.count
+}))
+return data
   }
 
+ 
 };

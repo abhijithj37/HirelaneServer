@@ -1,58 +1,46 @@
 const jwt = require("jsonwebtoken");
-
+const serviceId = process.env.SERVICE_ID;
 module.exports = {
-    
   generateToken: (seekerId) => {
     const token = jwt.sign({ seekerId }, process.env.SEEKER_JWT_SECRET);
     return token;
   },
 
   verifySeeker: async (req, res, next) => {
-  
     const token = await req.cookies.seeker_auth_token;
+
     if (!token) {
-    return res.status(401).send("Unauthorized: No token provided");
+      
+      return res.status(401).send("Unauthorized: No token provided");
     }
+
     try {
-    const decoded = jwt.verify(token, process.env.SEEKER_JWT_SECRET);
-    req.seekerId = decoded.seekerId;
-    next();
-    }catch (err) {
-    res.status(401).send("Unauthorized:Invalid token");
+      const decoded = jwt.verify(token, process.env.SEEKER_JWT_SECRET);
+      req.seekerId = decoded.seekerId;
+      next();
+    } catch (err) {
+      res.status(401).send("Unauthorized:Invalid token");
     }
   },
 
-   verifySeeker:async(req, res, next) => {
-  
-        const token = await req.cookies.seeker_auth_token;
-        if(!token) {
-          console.log('no token');
-        return res.status(401).send("Unauthorized: No token provided");
-        }
-        try{
-        const decoded=jwt.verify(token, process.env.SEEKER_JWT_SECRET);
-        req.seekerId=decoded.seekerId;
-        next();
-        }catch(err){
-        res.status(401).send("Unauthorized:Invalid token");
-        }
-      },
-      verifyEmployer:async (req, res, next) =>{
+  generateServiceToken: () => {
+    const token = jwt.sign({ serviceId }, process.env.SECRET);
+    return token;
+  },
 
-        const token =await req.cookies.employer_auth_token;
-        if(!token){
-        console.log('no emp token');
-        return res.status(401).send("Unauthorized: No token provided");
-        }
-           
-        try{     
+  verifyService: async (req, res, next) => {
+    const token = await req.headers.authorization.split(" ")[1];
 
-          const decoded=jwt.verify(token,process.env.EMPLOYER_JWT_SECRET);
-          req.employerId=decoded.employerId;
-          next();
-          }catch (err){
-          res.status(401).send("Unauthorized: Invalid token");
+    if (!token) {
+      return res.status(401).send("Unauthorized: No token provided");
+    }
 
-        }
-      },
+    try {
+      const decoded = jwt.verify(token, process.env.SECRET);
+      const id = decoded.serviceId;
+      next();
+    } catch (err) {
+      res.status(401).send("Unauthorized:Invalid token");
+    }
+  },
 };

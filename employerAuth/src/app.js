@@ -5,6 +5,8 @@ const app = express()
 const cors=require('cors')
 const cookieParser=require('cookie-parser')
 const employer=require('./api/employer')
+const internals=require('./api/internals')
+const { verifyService } = require('./utils/auth')
 const PORT=process.env.PORT
 app.use(cors({
     origin:true,
@@ -12,6 +14,7 @@ app.use(cors({
 }))
 app.use(cookieParser())
 app.use(express.json())
+app.use('/internal',verifyService,internals)
 app.use('/',employer)
 
 app.listen(PORT,(res)=>{

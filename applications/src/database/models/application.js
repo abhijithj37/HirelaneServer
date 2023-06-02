@@ -6,7 +6,10 @@ const applicationSchema = new mongoose.Schema({
      lName:String,
      phone:String,
      email:String,
-     createdAt:String,
+     createdAt:{
+      type:Date,
+      default:new Date()
+     },
      questions:[],
      jobId:String,
      jobTitle:String,
@@ -24,6 +27,10 @@ const applicationSchema = new mongoose.Schema({
      verified:{
         type:Boolean,
         default:false
+    },
+    verificationStatus:{
+      type:String,
+      default:'Not-verified'
     }
 })
 
@@ -44,7 +51,8 @@ const interviewSchema=new mongoose.Schema({
     status:{
     type:String,
     default:'Pending'
-    }
+    },
+    
      
 })
 

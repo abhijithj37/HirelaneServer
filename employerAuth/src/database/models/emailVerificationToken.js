@@ -10,7 +10,7 @@ const emailVerificationTokenSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-    expires: 600 // 10 minutes in seconds
+    expires: 600 
   }
 });
 

@@ -5,7 +5,7 @@
     verify: async (req, res, next) => {
         const token = await req.cookies.employer_auth_token;
         if (!token) {
-            console.log('no emp token');
+          
         return res.status(401).send("Unauthorized: No token provided");
         }
         try{
@@ -19,5 +19,23 @@
     
         }
       },
+
+      verifyService:async(req,res,next)=>{
+        const token = await req.headers.authorization.split(' ')[1];
+
+        if(!token) {
+        
+        return res.status(401).send("Unauthorized: No token provided");
+        }
+
+        try{
+        const decoded=jwt.verify(token, process.env.SECRET);
+        const id=decoded.serviceId
+        
+        next();
+        }catch(err){
+        res.status(401).send("Unauthorized:Invalid token");
+        }
+      }
       
  }

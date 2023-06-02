@@ -11,6 +11,10 @@ const employerSchema = new mongoose.Schema({
     userType:{
         type:String,
         default:'employer'
+    },
+    blocked:{
+        type:Boolean,
+        default:false   
     }
 })
 module.exports={

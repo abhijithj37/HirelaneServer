@@ -1,4 +1,4 @@
-const {seekers}=require('../modal/seeker')
+ const {seekers}=require('../modal/seeker')
 
 
 module.exports={
@@ -26,9 +26,16 @@ return updatedProfile
 
 getUserDetails:async(id)=>{
     const user =await seekers.findOne({_id:id}).select('_id fName lName image')
-    console.log(user,'its the user ');
     return user
-}
+},
+findAllUsers:async()=>{
+    const data=await  seekers.find().sort({_id:-1})
+    return data
+    },
+    updateUserStatus:async(id,status)=>{
+     const updated=await seekers.findOneAndUpdate({_id:id},{$set:{blocked:status}},{new:true})
+     return updated
+    }
 
 
 }

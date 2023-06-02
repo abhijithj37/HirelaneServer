@@ -1,15 +1,15 @@
 const jwt =require('jsonwebtoken')
- 
+const serviceId=process.env.SERVICE_ID
  module.exports={
     generateToken:(employerId)=>{
         const token=jwt.sign({employerId},process.env.EMPLOYER_JWT_SECRET)
         return token
     },
 
-    vefifyEmployer: async (req, res, next) => {
+    verifyEmployer: async (req, res, next) => {
         const token = await req.cookies.employer_auth_token;
         if (!token) {
-            console.log('no emp token');
+            
         return res.status(401).send("Unauthorized: No token provided");
         }
         try {
@@ -21,21 +21,28 @@ const jwt =require('jsonwebtoken')
     
         }
       },
-
-      verifySeeker:async(req, res, next) => {
-  
-        const token = await req.cookies.seeker_auth_token;
+      generateServiceToken:()=>{
+        const token = jwt.sign({ serviceId }, process.env.SECRET);
+        return token;
+      },
+      verifyService:async(req,res,next)=>{
+        const token = await req.headers.authorization.split(' ')[1];
+        
         if(!token) {
-          console.log('no token');
+        
         return res.status(401).send("Unauthorized: No token provided");
         }
+
         try{
-        const decoded=jwt.verify(token, process.env.SEEKER_JWT_SECRET);
-        req.seekerId=decoded.seekerId;
+        const decoded=jwt.verify(token, process.env.SECRET);
+        const id=decoded.serviceId
+        
         next();
         }catch(err){
+        
         res.status(401).send("Unauthorized:Invalid token");
         }
-      },
+      }
+      
       
  }

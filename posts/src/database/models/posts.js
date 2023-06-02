@@ -18,10 +18,13 @@ const jobPostSchema = new mongoose.Schema({
       responseType:String
       }
       ],
-      createdAt:String,
-      verified:{
-            type:Boolean,
-            default:false
+      createdAt:{
+      type:Date,
+      default:new Date()
+      },
+      status:{
+            type:String,
+            default:'Not-verified'
       }
       
       

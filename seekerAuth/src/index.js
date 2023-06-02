@@ -6,6 +6,9 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const PORT=process.env.PORT
 const seekerRoutes=require('./api/seeker')
+const internals=require('./api/internals');
+const { verifyService } = require('./utils/auth');
+
  app.use(
   cors({
     origin: true,
@@ -13,8 +16,10 @@ const seekerRoutes=require('./api/seeker')
   })
 );
 
+
 app.use(express.json());
 app.use(cookieParser());
+app.use('/internal',verifyService,internals)
 app.use('/',seekerRoutes)
 
 

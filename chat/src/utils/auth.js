@@ -5,7 +5,7 @@ const jwt =require('jsonwebtoken')
     verifyEmployer: async (req, res, next) => {
         const token = await req.cookies.employer_auth_token;
         if (!token) {
-            console.log('no emp token');
+        
         return res.status(401).send("Unauthorized: No token provided");
         }
         try {
@@ -22,7 +22,7 @@ const jwt =require('jsonwebtoken')
   
         const token = await req.cookies.seeker_auth_token;
         if(!token) {
-          console.log('no token');
+          
         return res.status(401).send("Unauthorized: No token provided");
         }
         try{

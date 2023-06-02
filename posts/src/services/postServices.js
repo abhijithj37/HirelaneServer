@@ -4,22 +4,20 @@ const {
   getEmployerJobs,
   deletePostById,
   updateJobPost,
-} =require("../repository/post-repository");
+  updatePostStatus,
+  findPostsByMonth,
+  findVerifiedJobs,
+} =require("../database/repository/post-repository");
 
 module.exports = {
   postJob: (req, res) => {
     const newPost = req.body;
-    const date = new Date();
-    const formattedDate = date.toLocaleString("en-US", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
+     
 
     newPost.employerId = req.employerId;
-    newPost.createdAt = formattedDate;
+  
 
-    console.log(newPost, "its the new post");
+    
     jobPosts(newPost)
       .save()
       .then(() => {
@@ -33,10 +31,11 @@ module.exports = {
 
 
   getAllJobs: (req, res) => {
+  
     jobPosts
       .find()
       .then((jobs) => {
-        res.status(200).json({ jobs });
+       return res.status(200).json({ jobs });
       })
       .catch(() => {
         res.status(500).send("Internal Server Error");
@@ -59,7 +58,7 @@ module.exports = {
 
   getJobSuggessions: (req, res) => {
     const { input } = req.query;
-    console.log("searching");
+    
     jobPosts
       .find({ jobTitle: { $regex: input, $options: "i" } }, { jobTitle: 1 })
       .then((jobs) => {
@@ -136,15 +135,37 @@ module.exports = {
   },
 
 
-  getLocations:async(req,res)=>{
-    console.log('calling????');
+  getLocations:async(req,res)=>{      
     const {input}=req.query
     try {
    const cities=await locations.find({city:{$regex:new RegExp(`^${input}`),$options:'i'}}).limit(10)
     res.json(cities)
    }catch (error){
-   console.error(error)
    res.status(500).json({message:'Internal server error'})
    }
+  },
+  updateStatus:(req,res)=>{
+    const {postId,status}=req.body
+    updatePostStatus(postId,status).then((updatedPost)=>{
+   res.status(200).json(updatedPost)
+    }).catch((err)=>{
+    res.status(500).send(err.message)
+    })
+    
+  },
+  getMonthlyPosts:(req,res)=>{
+  findPostsByMonth().then((data)=>{
+  return  res.status(200).json(data)
+  }).catch((err)=>{
+  res.status(500).send(err.message)
+  })
+  },
+
+  getVerifiedJobs:(req,res)=>{
+    findVerifiedJobs().then((data)=>{
+      res.status(200).json(data)
+    }).catch((err)=>{
+      res.status(500).send(err.message)
+    })
   }
 };

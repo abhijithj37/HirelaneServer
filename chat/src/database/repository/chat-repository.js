@@ -45,7 +45,7 @@ module.exports = {
   },
   updateMessage:async(id)=>{
     const updatedMessage=await Messages.updateOne({_id:id},{$set:{read:true}},{new:true})
-    console.log(updatedMessage,'the updated message')
+    
     return updatedMessage
   }
 

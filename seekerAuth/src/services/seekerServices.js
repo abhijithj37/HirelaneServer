@@ -1,18 +1,20 @@
 const { seekers} = require("../database/modal/seeker");
 const bcrypt = require("bcrypt");
-const { generateToken } = require("../utils/auth");
+const { generateToken, generateServiceToken } = require("../utils/auth");
 const jwt_decode = require("jwt-decode");
 const { body, validationResult } = require("express-validator");
-const { validateLogin } = require("../../../employerAuth/src/utils/validations/validateCredentials");
-const { updateSeekerProfile, getUserDetails } = require("../database/repository/seeker-repository");
+ const { updateSeekerProfile, getUserDetails, updateUserStatus, findAllUsers } = require("../database/repository/seeker-repository");
 const path=require('path');
 const crypto=require('crypto')
-const { log } = require("console");
-const sendVerificationCode = require("../utils/sendEmail");
-const { EmailVerificationTokens } = require("../database/modal/emailVerificationToken");
-  module.exports = {
+ const sendVerificationCode = require("../utils/sendEmail");
+const { EmailVerificationTokens } = require("../database/modal/emailVerificationToken")
+const axios=require('axios')
+const EMPLOYER_SERVICE=process.env.EMPLOYER_SERVICE
+const token=generateServiceToken()
+
+module.exports = {
 signUp: async (req, res) => {
-    try {
+     try {
     await body("fName")
         .notEmpty()
         .withMessage("First name is required")
@@ -38,7 +40,7 @@ signUp: async (req, res) => {
         .withMessage("Password should contain at least 8 characters")
         .run(req);
       const errors = validationResult(req);
-
+     
       if (!errors.isEmpty()) {
         const errorObject ={};
         errors.array().forEach((error) => {
@@ -47,8 +49,8 @@ signUp: async (req, res) => {
         return res.status(422).json({ errors: errorObject });
       }
 
-      const { email ,verificationCode} = req.body;
-      // const seeker = await seekers.findOne({ email });
+      const {email,verificationCode}=req.body;
+    
       const verificationToken=await EmailVerificationTokens.findOne({email,verificationToken:verificationCode})
        if (!verificationToken) {
       return res.status(400).send("Invalid verification code");
@@ -76,7 +78,7 @@ signUp: async (req, res) => {
   
   login:async(req, res) => {
     let { email, password } = req.body;
-    try {
+     try {
       await body("email")
         .notEmpty()
         .withMessage("Email is required")
@@ -102,6 +104,10 @@ signUp: async (req, res) => {
     
     seekers.findOne({email:email}).then((seeker) => {
       if (seeker) {
+        if(seeker.blocked){
+          return res.status(400).send('This account is blocked')
+        }
+     
         bcrypt.compare(password, seeker.password).then(async (result) => {
           if (result) {
             const token = generateToken(seeker._id);
@@ -126,8 +132,7 @@ signUp: async (req, res) => {
 
   verifyUser: (req, res) => {
     const id = req.seekerId;
-    console.log(id,'thies is the id');
-      seekers
+       seekers
       .find({ _id: id })
       .then((seeker)=>{
          res.status(200).json({ user: seeker });
@@ -153,8 +158,7 @@ signUp: async (req, res) => {
 
 
 
-  googleSignIn: async (req, res) => {
-
+  googleSignIn:async(req, res)=>{
     const token = req.body.token;
     const userData = await jwt_decode(token);
     const {given_name,family_name, email,email_verified}=userData;
@@ -166,6 +170,9 @@ signUp: async (req, res) => {
 
     const seeker = await seekers.findOne({ email: email });
     if (seeker) {
+      if(seeker.blocked){
+        return res.status(400).send('This account is blocked')
+      }
       const seeker_token = generateToken(seeker._id);
       res.cookie("seeker_auth_token", seeker_token, { httpOnly: true });
       return res.status(200).json({seeker});
@@ -215,10 +222,8 @@ if(req.file){
 
 
   getDetails:(req,res)=>{
-    ('hello')
-  getUserDetails(req.params.id).then((data)=>{
-  log(data,'recived in the route')
-  res.status(200).json(data)
+   getUserDetails(req.params.id).then((data)=>{
+   return res.status(200).json(data)
   }).catch((err)=>{
   res.status(500).send('Internal Server Error')
   })
@@ -242,6 +247,35 @@ res.status(200).send('Verification code send to email')
 }catch(error){
  res.status(400).send(error)
 }
+},
+getUsers:(req,res)=>{
+  
+  findAllUsers().then((data)=>{
+  res.status(200).json(data)
+  }).catch((err)=>{
+  res.status(500).send(err.message)
+  })
+},
+updateVerificationStatus:(req,res)=>{
+   const {userId,status}=req.body
+  updateUserStatus(userId,status).then((data)=>{
+  return  res.status(200).json(data)
+  }).catch((err)=>{
+    res.status(500).send(err.message)
+  })
+
+},
+
+getCompanyDetails:(req,res)=>{
+axios.get(`${EMPLOYER_SERVICE}details/${req.params.id}`,{
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+}).then(({data})=>{
+   res.status(200).json(data)
+}).catch((err)=>{
+  res.status(500).send(err.message)
+})
 }
 
 };

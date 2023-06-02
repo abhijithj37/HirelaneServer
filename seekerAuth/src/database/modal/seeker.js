@@ -20,14 +20,21 @@ const seekerSchema = new mongoose.Schema({
         type:Boolean,
         default:false
     },
-    createdAt:Date,
+    createdAt:{
+        type:Date,
+        default:new Date()
+    },
     userType:{
         type:String,
         default:'job_seeker'
-    },
+    },      
     cvUrl:{
         type:String,
         default:null
+    },
+    blocked:{
+        type:Boolean,
+        default:false
     }
 })
 

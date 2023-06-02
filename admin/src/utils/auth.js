@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-
+const serviceId=process.env.SERVICE_ID
 module.exports = {
     
   generateToken: (admin_id) => {
@@ -21,6 +21,12 @@ module.exports = {
     res.status(401).send("Unauthorized:Invalid token");
     }
   },
+
+  generateServiceToken:()=>{
+    const token = jwt.sign({ serviceId }, process.env.SECRET);
+    return token;
+  },
+
 
    
 };

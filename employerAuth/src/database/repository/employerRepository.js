@@ -29,5 +29,13 @@ module.exports = {
   getCompanyDetails:async(id)=>{
     const data=await employers.findOne({_id:id}).select('_id companyName ')
     return data
+  },
+  findAllEmployers:async()=>{
+  const data=await  employers.find()
+  return data
+  },
+  updateUserStatus:async(id,status)=>{
+   const updated=await employers.findOneAndUpdate({_id:id},{$set:{blocked:status}},{new:true})
+   return updated
   }
 };
