@@ -58,12 +58,12 @@ module.exports = {
   },
 
 
-  getJobApplications: (req, res) => {
+  getJobApplications:(req, res) => {
     const id = req.params.id;
     const status=req.params.status
     findJobApplications(id,status)
       .then((applications) => {
-        res.status(200).json({ applications });
+        res.status(200).json({applications});
       })
       .catch((err) => {
         res.status(500).send(err.message);

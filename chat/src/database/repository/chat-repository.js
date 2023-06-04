@@ -1,6 +1,6 @@
  const { Conversations } = require("../models/conversation");
 const { Messages } = require("../models/message");
-
+const {Notifications} =require('../models/notification')
 module.exports = {
   createNewMessage: async (data) => {
  
@@ -39,14 +39,37 @@ module.exports = {
   const conversations=await Conversations.find({chatUsers:{$in:[id]}}).sort({updatedAt:-1})
    return conversations
   },
+
   findUnreadMessages:async(id)=>{
     const messages= await Messages.find({conversationId:id,read:false})
     return messages
   },
+
   updateMessage:async(id)=>{
     const updatedMessage=await Messages.updateOne({_id:id},{$set:{read:true}},{new:true})
     
     return updatedMessage
-  }
+  },
+
+createdNewNotification:async(data)=>{
+  const newNotificaton=await Notifications(data).save()
+  return newNotificaton
+},
+
+findNotifications:async(id)=>{
+  const data=await Notifications.find({to:id}).sort({_id:-1})
+  return data
+},
+
+deleteNotification:async(id)=>{
+   const data=await Notifications.deleteOne({_id:id})
+   return data
+},
+updateNotification:async(id)=>{
+  const updated =await Notifications.findOneAndUpdate({_id:id},{$set:{read:true}},{new:true})
+  console.log('its the updated notification',updated);
+  return updated
+}
+  
 
 };

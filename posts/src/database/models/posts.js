@@ -26,8 +26,6 @@ const jobPostSchema = new mongoose.Schema({
             type:String,
             default:'Not-verified'
       }
-      
-      
 })
 
 module.exports={

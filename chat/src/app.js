@@ -5,7 +5,9 @@ const app = express();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const chat = require("../src/api/chat");
+const internals=require('./api/internals')
 const socket = require("socket.io");
+const { verifyService } = require("./utils/auth");
 const PORT = process.env.PORT;
 
 app.use(
@@ -16,31 +18,52 @@ app.use(
 );
 app.use(cookieParser());
 app.use(express.json());
-app.use("/", chat);
+app.use('/internal',verifyService,internals)
+app.use("/",chat);
 
-const server = app.listen(PORT, (res) => {
+const server = app.listen(PORT, (res)=>{
   console.log(`Chat server running in the port ${PORT}`);
 });
 
 const io = socket(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000","http://localhost:3001"],
   },
 });
 
 // ******************************************************************************Chat*********************************************************************************************************
 
 global.onlineUsers = new Map();
+global.connectedUsers=new Map()
 const userToSocketIdMap = new Map();
 const socketIdToUserMap = new Map();
 
 io.on("connection", (socket) => {
+  
   socket.on("addUser", (id) => {
+    
     global.onlineUsers.set(id, socket.id);
 
     const onlineUserIds = Array.from(global.onlineUsers.keys());
     io.emit("onlineUsers", onlineUserIds);
   });
+  
+  socket.on("connect-user",(id)=>{
+   global.connectedUsers.set(id,socket.id)
+  const connectedUserIds=Array.from(global.connectedUsers.keys())
+  console.log(connectedUserIds,'the connected people')
+  io.emit('connected-users',connectedUserIds)
+  
+  })
+   
+  socket.on('send-notification',(data)=>{
+   console.log('notification to send',data);
+    const sendUserSocket=connectedUsers.get(data.to)
+    console.log('the to users',sendUserSocket);
+    if(sendUserSocket){
+      socket.to(sendUserSocket).emit('arriving-notification',data)
+    }
+  })
 
   socket.on("send-msg", (data) => {
     const sendUserSocket = onlineUsers.get(data.to);
@@ -48,10 +71,13 @@ io.on("connection", (socket) => {
       socket.to(sendUserSocket).emit("msg-receive", data);
     }
   });
+  
 
-  socket.on("disconnect", () => {
-    const userId = Array.from(global.onlineUsers.entries()).find(
-      ([key, value]) => value === socket.id
+
+  socket.on("disconnect",()=>{
+    console.log('socket server disconnected');
+    const userId=Array.from(global.onlineUsers.entries()).find(
+    ([key,value])=>value===socket.id
     )?.[0];
     if (userId) {
       global.onlineUsers.delete(userId);
@@ -59,6 +85,7 @@ io.on("connection", (socket) => {
       io.emit("onlineUsers", onlineUserIds);
     }
   });
+
 
   socket.on("removeFromOnline", (id) => {
     const userId = id;

@@ -34,7 +34,7 @@ module.exports = {
     return data;
   },
   findJobApplications:async(id,status)=>{
-   const data=await applications.find({jobId:id,status:status})
+   const data=await applications.find({jobId:id,status:status,verificationStatus:'Approved'})
    return data
   },
 

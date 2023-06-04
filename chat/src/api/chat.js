@@ -15,9 +15,10 @@ router.get('/emp-conversations/:id',verifyEmployer,getConversations)
 router.get('/conversations/:id',verifySeeker,getConversations)
 router.get('/emp-unreadMessages/:id',verifyEmployer,getUnreadMessages)
 router.get('/unreadMessages/:id',verifySeeker,getUnreadMessages)
-
 router.put('/emp-update-msg',verifyEmployer,updateMsg)
 router.put('/update-msg',verifySeeker,updateMsg)
+
+
 
 
    

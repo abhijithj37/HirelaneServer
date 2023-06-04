@@ -10,6 +10,7 @@ const crypto=require('crypto')
 const { EmailVerificationTokens } = require("../database/modal/emailVerificationToken")
 const axios=require('axios')
 const EMPLOYER_SERVICE=process.env.EMPLOYER_SERVICE
+const CHAT_SERVICE=process.env.CHAT_SERVICE
 const token=generateServiceToken()
 
 module.exports = {
@@ -276,6 +277,41 @@ axios.get(`${EMPLOYER_SERVICE}details/${req.params.id}`,{
 }).catch((err)=>{
   res.status(500).send(err.message)
 })
+},
+getMyNotifications:(req,res)=>{
+axios.get(`${CHAT_SERVICE}notifications?id=${req.seekerId}`,{
+  headers:{
+  Authorization:`Bearer ${token}`,
+  },
+}).then(({data})=>{
+  res.status(200).json(data)
+}).catch((err)=>{
+  res.status(500).send(err.message)
+})
+},
+
+deleteNotification:(req,res)=>{
+axios.delete(`${CHAT_SERVICE}notification/${req.params.id}`,{
+  headers:{
+  Authorization:`Bearer ${token}`,
+  },
+}).then(({data})=>{
+  res.status(200).json(data)
+}).catch((err)=>{
+  res.status(500).send(err.message)
+})
+},
+updateMyNotification:(req,res)=>{
+  
+  axios.put(`${CHAT_SERVICE}notification`,req.body,{
+    headers:{
+    Authorization:`Bearer ${token}`,
+    },
+  }).then(({data})=>{ 
+    res.status(200).json(data)
+  }).catch((err)=>{
+     res.status(500).send(err.message)
+  })
 }
 
 };

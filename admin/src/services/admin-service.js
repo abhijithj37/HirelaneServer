@@ -8,7 +8,9 @@ const POST_SERVICE=process.env.POST_SERVICE
 const APPLICATION_SERVICE=process.env.APPLICATION_SERVICE
 const EMPLOYER_SERVICE=process.env.EMPLOYER_SERVICE
 const USER_SERVICE=process.env.USER_SERVICE
+const CHAT_SERVICE=process.env.CHAT_SERVICE
 const token=generateServiceToken()
+
 
 module.exports = {
 
@@ -196,6 +198,19 @@ getMonthlyPosts:(req,res)=>{
  }).catch((err)=>{
    res.status(500).send(err.message)
  })
+},
+
+
+sendNotification:(req,res)=>{
+  axios.post(`${CHAT_SERVICE}notification`,req.body,{
+    headers:{
+      Authorization:`Bearer ${token}`
+    }
+   }).then(({data})=>{
+    res.status(200).json(data)
+   }).catch((err)=>{
+    res.status(500).send(err.message)
+   })
 }
 
 

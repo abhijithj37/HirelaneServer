@@ -15,9 +15,12 @@ const { employers } = require("../database/models/employer");
 const crypto=require('crypto')
 const axios=require('axios')
 const USER_SERVICE=process.env.USER_SERVICE
+const CHAT_SERVICE=process.env.CHAT_SERVICE
 const token=generateServiceToken()
 
+
 module.exports = {
+
 
 
   signUp: async (req, res) => {
@@ -112,6 +115,7 @@ module.exports = {
       res.status(500).send("Internal Server Error");
     }
   },
+
   getDetails:(req,res)=>{
     getCompanyDetails(req.params.id).then((data)=>{
     return  res.status(200).json(data)
@@ -120,6 +124,7 @@ module.exports = {
     })
 
   },
+
   sendVerificationEmail:async(req,res)=>{
      try{
     const {email}=req.body
@@ -147,6 +152,7 @@ module.exports = {
       res.status(500).send(err.message)
       })
     },
+
     updateVerificationStatus:(req,res)=>{
        const {employerId,status}=req.body
       updateUserStatus(employerId,status).then((data)=>{
@@ -167,8 +173,55 @@ module.exports = {
     }).catch((err)=>{
       res.status(500).send(err.message)
     })
-    }
+    },
 
+    sendNotification:(req,res)=>{
+      axios.post(`${CHAT_SERVICE}notification`,req.body,{
+        headers:{
+          Authorization:`Bearer ${token}`
+        }
+       }).then(({data})=>{
+        res.status(200).json(data)
+       }).catch((err)=>{
+        res.status(500).send(err.message)
+       })
+    },
+
+    getMyNotifications:(req,res)=>{
+      axios.get(`${CHAT_SERVICE}notifications?id=${req.employerId}`,{
+        headers:{
+        Authorization:`Bearer ${token}`,
+        },
+      }).then(({data})=>{
+        res.status(200).json(data)
+      }).catch((err)=>{
+        res.status(500).send(err.message)
+      })
+      },
+      
+      deleteNotification:(req,res)=>{
+      axios.delete(`${CHAT_SERVICE}notification/${req.params.id}`,{
+        headers:{
+        Authorization:`Bearer ${token}`,
+        },
+      }).then(({data})=>{
+        res.status(200).json(data)
+      }).catch((err)=>{
+        res.status(500).send(err.message)
+      })
+      },
+      updateMyNotification:(req,res)=>{
+        
+        axios.put(`${CHAT_SERVICE}notification`,req.body,{
+          headers:{
+          Authorization:`Bearer ${token}`,
+          },
+        }).then(({data})=>{ 
+          res.status(200).json(data)
+        }).catch((err)=>{
+           res.status(500).send(err.message)
+        })
+      }
 
 
 };

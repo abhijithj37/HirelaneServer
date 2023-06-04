@@ -7,6 +7,10 @@ const {
   getEmployer,
   sendVerificationEmail,
   getUserDetails,
+  sendNotification,
+  getMyNotifications,
+  deleteNotification,
+  updateMyNotification,
 } = require("../services/employerService");
 const {
   validateSignup,
@@ -30,5 +34,19 @@ router.get("/verifyEmployer", verifyEmployer, getEmployer);
 router.get("/logout", logout);
 
 router.get("/user-details/:id", verifyEmployer, getUserDetails);
+    
+router.post('/send-notification',verifyEmployer,sendNotification)
+
+router.get('/my-notifications',verifyEmployer,getMyNotifications)
+
+router.delete('/my-notification/:id',verifyEmployer,deleteNotification)
+
+router.put('/my-notification',verifyEmployer,updateMyNotification)
+
+
+
+
+
+
 
 module.exports = router;

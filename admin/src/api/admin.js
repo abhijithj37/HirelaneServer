@@ -15,6 +15,7 @@ const {
   getAllUsers,
   getMonthlyApplications,
   getMonthlyPosts,
+  sendNotification,
 } = require("../services/admin-service");
 const { AdminAuth } = require("../utils/auth");
 const router = express.Router();
@@ -34,5 +35,6 @@ router.put("/verify-employer", AdminAuth, verifyEmployer);
 router.put("/verify-user", AdminAuth, verifyUser);
 router.get("/monthly-applications", AdminAuth, getMonthlyApplications);
 router.get("/monthly-posts", AdminAuth, getMonthlyPosts);
+router.post('/send-notification',AdminAuth,sendNotification)
 
 module.exports = router;
