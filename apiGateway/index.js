@@ -11,12 +11,17 @@ const EMPLOYER_SERVICE=process.env.EMPLOYER_SERVICE
 const POST_SERVICE=process.env.POST_SERVICE
 const APPLICATION_SERVICE=process.env.APPLICATION_SERVICE
 const CHAT_SERVICE=process.env.CHAT_SERVICE
+
+ 
+
 app.use(cors({
 origin:true,
 credentials:true
 }))
+
 app.use(cookieParser())
 app.use(express.json())
+
 
 app.use('/seeker',proxy(SEEKER_SERVICE))
 app.use('/employer',proxy(EMPLOYER_SERVICE))
