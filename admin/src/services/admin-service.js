@@ -15,6 +15,7 @@ const token=generateServiceToken()
 module.exports = {
 
   login: (req, res) => {
+    console.log('is it calling admin');
     const {userName,password }=req.body;
     findAdmin(userName,password)
       .then(async (admin)=>{

@@ -18,5 +18,5 @@ app.use('/internal',verifyService,internals)
 app.use('/',employer)
 
 app.listen(PORT,(res)=>{
-console.log(`Employer auth server  running in the port ${PORT}`)
+console.log(`Employer auth server running in the port ${PORT}`)
 })                             
