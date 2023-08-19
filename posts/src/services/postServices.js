@@ -72,12 +72,16 @@ module.exports = {
 
   searchJobs: (req, res) => {
     const { jobKeyWord, jobLocation } = req.body;
-    let searchQuery = { jobTitle: { $regex: jobKeyWord, $options: "i" } };
+      let searchQuery = { jobTitle: { $regex: jobKeyWord, $options: "i" } };
     if (jobLocation) {
       searchQuery.jobLocation = jobLocation;
     }
     if (!jobKeyWord) {
       searchQuery = { jobLocation: jobLocation };
+    }
+
+    if(!jobKeyWord&&!jobLocation){
+       searchQuery={}
     }
     jobPosts
       .find(searchQuery)
