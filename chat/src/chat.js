@@ -27,7 +27,7 @@ const server = app.listen(PORT, (res)=>{
 
 const io = socket(server, {
   cors: {
-    origin: ["http://localhost:3000","http://localhost:3001"],
+    origin: ["https://fashionbytes.online/","https://admin.fashionbytes.online/login"],
   },
 });
 
